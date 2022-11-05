@@ -22,7 +22,7 @@ class TestingConfig(Config):
 
 
 config = {
-    'test': TestingConfig,
-    'development': DevelopmentConfig,
-    'production': ProductionConfig
-}
+        'test': TestingConfig,
+        'development': DevelopmentConfig,
+        'production': ProductionConfig
+    }
