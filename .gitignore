@@ -1,29 +1,28 @@
-# Folder view configuration files
 .DS_Store
 Desktop.ini
-
-# Thumbnail cache files
-._*
 Thumbs.db
 
-# Files that might appear on external disks
 .Spotlight-V100
 .Trashes
 
-# Compiled Python files
+._*
+*.out
 *.pyc
 
-# Compiled C++ files
-*.out
-
-# Application specific files
-venv
 node_modules
-.sass-cache
-
-
 Pipfile
-__pycache__
 
+venv/
+__pycache__/
+instance/
+htmlcov/
+dist/
+build/
+
+*.egg-info/
+.pytest_cache/
+
+.sass-cache
+.coverage
 .vscode
 .env
