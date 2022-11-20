@@ -3,7 +3,7 @@ import os
 
 class Config():
     SECRET_KEY = os.environ.get('SECRET_KEY')
-    SERVER_NAME = os.environ.get('SERVER_HOST')
+    SERVER_NAME = os.environ.get('HOST')
 
 
 class ProductionConfig(Config):
