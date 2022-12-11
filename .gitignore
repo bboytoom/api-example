@@ -8,6 +8,7 @@ Thumbs.db
 ._*
 *.out
 *.pyc
+*.log
 
 node_modules
 Pipfile

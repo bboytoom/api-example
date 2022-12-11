@@ -1,5 +1,6 @@
 import os
 
+
 from dotenv import load_dotenv
 from flask import Flask
 from flask_limiter import Limiter
@@ -13,7 +14,7 @@ def create_app():
     from src.routes.api import api
 
     app = Flask(__name__, instance_relative_config=True)
-    app.config. from_object(config[os.environ.get('ENV')])
+    app.config.from_object(config[os.environ.get('ENV')])
 
     limiter = Limiter(
         app,

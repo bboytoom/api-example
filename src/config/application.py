@@ -1,9 +1,14 @@
 import os
 
+from logging.config import dictConfig
+from src.config.logger import config
+
 
 class Config():
     SECRET_KEY = os.environ.get('SECRET_KEY')
     SERVER_NAME = os.environ.get('HOST')
+
+    dictConfig(config)
 
 
 class ProductionConfig(Config):
@@ -22,7 +27,7 @@ class TestingConfig(Config):
 
 
 config = {
-        'test': TestingConfig,
-        'development': DevelopmentConfig,
-        'production': ProductionConfig
+    'test': TestingConfig,
+    'development': DevelopmentConfig,
+    'production': ProductionConfig
     }
