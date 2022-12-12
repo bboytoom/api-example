@@ -1,6 +1,6 @@
 from datetime import datetime
 
-config = {
+CONFIG = {
     'version': 1,
     'formatters': {
         'default': {

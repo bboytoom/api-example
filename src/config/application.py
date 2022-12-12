@@ -1,19 +1,18 @@
 import os
 
 from logging.config import dictConfig
-from src.config.logger import config
+from src.config.logger import CONFIG
 
 
 class Config():
     SECRET_KEY = os.environ.get('SECRET_KEY')
-    SERVER_NAME = os.environ.get('HOST')
-
-    dictConfig(config)
+    dictConfig(CONFIG)
 
 
 class ProductionConfig(Config):
     DEBUG = False
     TESTING = False
+    SERVER_NAME = os.environ.get('HOST')
 
 
 class DevelopmentConfig(Config):
