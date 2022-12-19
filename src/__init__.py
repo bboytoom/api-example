@@ -12,6 +12,7 @@ load_dotenv('.env')
 
 def create_app():
     from src.config.application import config
+    from src.config.sqlalchemy_db import db
     from src.routes.api import api
 
     app = Flask(__name__, instance_relative_config=True)
@@ -24,6 +25,9 @@ def create_app():
         default_limits=['60/minute'])
 
     limiter.init_app(app)
+
+    # Database
+    db.init_app(app)
     marshmallow.init_app(app)
 
     # Routes
@@ -36,8 +40,12 @@ def create_app():
 def register_error(app):
     from src.routes.errors import page_not_found, \
         internal_server_error, \
-        ratelimit_handler
+        rate_limit_handler, \
+        bad_request_handler, \
+        method_not_allow_handler
 
+    app.register_error_handler(400, bad_request_handler)
     app.register_error_handler(404, page_not_found)
+    app.register_error_handler(405, method_not_allow_handler)
+    app.register_error_handler(429, rate_limit_handler)
     app.register_error_handler(500, internal_server_error)
-    app.register_error_handler(429, ratelimit_handler)

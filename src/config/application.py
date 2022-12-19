@@ -6,18 +6,21 @@ from src.config.logger import CONFIG
 
 class Config():
     SECRET_KEY = os.environ.get('SECRET_KEY')
+    # SERVER_NAME = os.environ.get('HOST')
+
     dictConfig(CONFIG)
 
 
 class ProductionConfig(Config):
     DEBUG = False
     TESTING = False
-    SERVER_NAME = os.environ.get('HOST')
 
 
 class DevelopmentConfig(Config):
     DEBUG = True
     TESTING = False
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class TestingConfig(Config):
