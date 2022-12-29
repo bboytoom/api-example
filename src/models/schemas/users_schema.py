@@ -11,6 +11,8 @@ from marshmallow import Schema, \
 
 
 class UserSchema(Schema):
+    uuid = fields.Str()
+
     first_name = fields.Str(
         required=True,
         validate=[
@@ -41,6 +43,7 @@ class UserSchema(Schema):
         )
 
     date_of_birth = fields.Date('%Y-%m-%d', required=True)
+    status = fields.Bool(required=True)
 
     @validates('date_of_birth')
     def is_not_in_future(self, value):
@@ -56,14 +59,24 @@ class UserSchema(Schema):
     @pre_load
     def pre_load(self, data, **kwargs):
         if request.method in ['PUT']:
+            self.fields.get('uuid').required = False
             self.fields.get('password').required = False
+
+        if request.method in ['POST']:
+            self.fields.get('uuid').required = False
+            self.fields.get('status').required = False
 
         return data
 
     @post_load
     def post_load(self, data, **kwargs):
-        data['last_name'] = data['last_name'].lower()
-        data['first_name'] = data['first_name'].lower()
-        data['email'] = data['email'].lower()
+        data['last_name'] = data.get('last_name').lower().rstrip().lstrip()
+        data['first_name'] = data.get('first_name').lower().rstrip().lstrip()
+        data['email'] = data.get('email').lower()
+        data['date_of_birth'] = data.get('date_of_birth').strftime('%Y-%m-%d')
 
         return data
+
+
+schema_user = UserSchema()
+schemas_users = UserSchema(many=True)

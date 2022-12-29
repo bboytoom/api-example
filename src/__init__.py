@@ -4,10 +4,14 @@ import os
 from dotenv import load_dotenv
 from flask import Flask
 from flask_limiter import Limiter
-from flask_marshmallow import Marshmallow
 from flask_limiter.util import get_remote_address
+from flask_migrate import Migrate
+from flask_marshmallow import Marshmallow
 
 load_dotenv('.env')
+
+marshmallow = Marshmallow()
+migrate = Migrate()
 
 
 def create_app():
@@ -18,7 +22,6 @@ def create_app():
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(config[os.environ.get('ENV')])
 
-    marshmallow = Marshmallow()
     limiter = Limiter(
         app,
         key_func=get_remote_address,
@@ -29,6 +32,7 @@ def create_app():
     # Database
     db.init_app(app)
     marshmallow.init_app(app)
+    migrate.init_app(app, db)
 
     # Routes
     app.register_blueprint(api)
