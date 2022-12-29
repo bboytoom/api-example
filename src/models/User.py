@@ -83,19 +83,9 @@ class User(db.Model):
         return db.session.query(User) \
             .options(load_only(*fields)).all()
 
-    def create(self):
+    def save(self):
         try:
             db.session.add(self)
-            db.session.commit()
-
-            return self.uuid
-        except Exception as e:
-            logger.error(e)
-
-            return
-
-    def update():
-        try:
             db.session.commit()
 
             return True
@@ -104,9 +94,9 @@ class User(db.Model):
 
             return False
 
-    def delete(_uuid):
+    def delete(self):
         try:
-            db.session.query(User).filter_by(uuid=_uuid).delete()
+            db.session.delete(self)
             db.session.commit()
             return True
         except Exception as e:

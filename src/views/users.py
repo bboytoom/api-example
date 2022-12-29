@@ -1,80 +1,58 @@
-from flask import jsonify
+from flask import jsonify, abort
 from flask.views import MethodView
 
 from src.models.User import User
 from src.models.schemas.users_schema import schema_user, schemas_users
-from src.views.decorators.user_decorator import clean_request_user_store
+from src.views.decorators.user_decorator import clean_request_user_store, \
+    validate_method_parameters
 
 
 class Users(MethodView):
+
+    @validate_method_parameters
     def get(self, user_uuid):
         if user_uuid is None:
             return jsonify(
                 data=schemas_users.dump(User.retrieve_all_user())
                 )
 
-        user = User.retrieve_user(user_uuid)
-
-        if not user:
-            return jsonify(
-                result='uuid not exists'
-                ), 404
-
-        return jsonify(schema_user.dump(user))
+        return jsonify(schema_user.dump(user_uuid))
 
     @clean_request_user_store
     def post(self, data):
         if User.exists_email(data.get('email')):
-            return jsonify(
-                result='email exists'
-                ), 422
+            return abort(422, 'The email already exists')
 
         user = User.new_user(data)
 
-        return jsonify(
-            result=user.create()
-            ), 201
+        if user.save():
+            return jsonify(
+                message='added',
+                user_uuid=user.uuid
+                ), 201
 
+        return abort(400)
+
+    @validate_method_parameters
     @clean_request_user_store
     def put(self, data, user_uuid):
-        user = User.retrieve_user(user_uuid)
+        if User.exists_email(data.get('email'), user_uuid.uuid):
+            return abort(422, 'The email already exists')
 
-        if not user:
-            return jsonify(
-                result='uuid not exists'
-                ), 404
+        user_uuid.email = data.get('email')
+        user_uuid.first_name = data.get('first_name')
+        user_uuid.last_name = data.get('last_name')
+        user_uuid.date_of_birth = data.get('date_of_birth')
+        user_uuid.status = data.get('status')
 
-        if User.exists_email(data.get('email'), user_uuid):
-            return jsonify(
-                result='the email already exists'
-                ), 422
+        if user_uuid.save():
+            return jsonify(message='updated')
 
-        user.email = data.get('email')
-        user.first_name = data.get('first_name')
-        user.last_name = data.get('last_name')
-        user.date_of_birth = data.get('date_of_birth')
-        user.status = data.get('status')
+        return abort(400)
 
-        if User.update():
-            return jsonify(
-                result='update'
-                )
-
-        return jsonify(
-            result='error'
-            ), 400
-
+    @validate_method_parameters
     def delete(self, user_uuid):
-        user = User.retrieve_user(user_uuid)
-
-        if not user:
-            return jsonify(
-                result='uuid not exists'
-                ), 404
-
-        if User.delete(user_uuid):
+        if user_uuid.delete():
             return '', 204
 
-        return jsonify(
-            result='error'
-            ), 400
+        return abort(400)

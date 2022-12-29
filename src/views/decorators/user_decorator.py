@@ -1,5 +1,7 @@
 import functools
 from flask import request, jsonify
+
+from src.models.User import User
 from src.models.schemas.users_schema import UserSchema
 
 
@@ -26,5 +28,21 @@ def clean_request_user_store(func):
                 ), 422
 
         return func(self, schema_user.load(request.get_json()), *args, **kwargs)
+
+    return wrapper
+
+
+def validate_method_parameters(func):
+    @functools.wraps(func)
+    def wrapper(self, *args, **kwargs):
+        uuid = kwargs.get('user_uuid', None)
+
+        if uuid is None:
+            return func(self, uuid)
+
+        user_uuid = User.query.filter_by(uuid=uuid).first_or_404()
+        return func(self, user_uuid)
+
+    wrapper.__name__ = func.__name__
 
     return wrapper

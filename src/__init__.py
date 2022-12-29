@@ -46,10 +46,12 @@ def register_error(app):
         internal_server_error, \
         rate_limit_handler, \
         bad_request_handler, \
-        method_not_allow_handler
+        method_not_allow_handler, \
+        unprocessable_entity
 
     app.register_error_handler(400, bad_request_handler)
     app.register_error_handler(404, page_not_found)
     app.register_error_handler(405, method_not_allow_handler)
+    app.register_error_handler(422, unprocessable_entity)
     app.register_error_handler(429, rate_limit_handler)
     app.register_error_handler(500, internal_server_error)
