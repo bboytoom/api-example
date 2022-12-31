@@ -7,6 +7,8 @@ from flask import current_app
 
 from alembic import context
 from src.models import User
+from src.models import Task
+from src.models import Information
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -54,7 +56,7 @@ def run_migrations_offline():
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url, target_metadata=get_metadata(), literal_binds=True
-    )
+        )
 
     with context.begin_transaction():
         context.run_migrations()
@@ -86,7 +88,7 @@ def run_migrations_online():
             target_metadata=get_metadata(),
             process_revision_directives=process_revision_directives,
             **current_app.extensions['migrate'].configure_args
-        )
+            )
 
         with context.begin_transaction():
             context.run_migrations()
