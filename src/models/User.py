@@ -3,7 +3,7 @@ import logging
 
 from datetime import datetime
 from sqlalchemy import and_
-from sqlalchemy.orm import load_only
+from sqlalchemy.orm import load_only, relationship
 from multipledispatch import dispatch
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -14,10 +14,14 @@ logger = logging.getLogger(__name__)
 
 class User(db.Model):
     __tablename__ = 'users'
+    __table_args__ = (
+        db.Index('ix_users_uuid_email', 'uuid', 'email', unique=True),
+        )
 
     uuid = db.Column(
         db.CHAR(36),
         primary_key=True,
+        unique=True,
         index=True,
         nullable=False,
         default=uuid.uuid4
@@ -28,7 +32,14 @@ class User(db.Model):
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
     date_of_birth = db.Column(db.Date, index=True, nullable=False)
+    image_name = db.Column(db.String(100), nullable=True)
     status = db.Column(db.Boolean, default=True)
+    information = relationship(
+        'Information',
+        cascade='all, delete',
+        uselist=False,
+        backref='information'
+        )
 
     created_at = db.Column(
         db.DateTime,
