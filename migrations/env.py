@@ -7,6 +7,7 @@ from flask import current_app
 
 from alembic import context
 from src.models import User
+from src.models import Task
 from src.models import Information
 
 # this is the Alembic Config object, which provides

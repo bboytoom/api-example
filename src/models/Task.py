@@ -1,4 +1,5 @@
 import uuid
+import enum
 import logging
 
 from datetime import datetime
@@ -7,8 +8,13 @@ from src.config.sqlalchemy_db import db
 logger = logging.getLogger(__name__)
 
 
-class Information(db.Model):
-    __tablename__ = 'information'
+class TypeTasks(enum.Enum):
+    no_repeat = 1
+    daily = 2
+
+
+class Task(db.Model):
+    __tablename__ = 'tasks'
 
     uuid = db.Column(
         db.CHAR(36),
@@ -22,16 +28,31 @@ class Information(db.Model):
     user_uuid = db.Column(
         db.CHAR(36),
         db.ForeignKey('users.uuid'),
-        unique=True,
         index=True,
         nullable=False
         )
 
-    country = db.Column(db.String(50), nullable=True)
-    post_code = db.Column(db.String(50), nullable=False)
-    state = db.Column(db.String(50), nullable=True)
-    city = db.Column(db.String(50), nullable=False)
-    address = db.Column(db.String(50), nullable=False)
+    name = db.Column(db.String(150), nullable=False)
+    description = db.Column(db.Text(), nullable=True)
+
+    type_task = db.Column(
+        db.Enum(TypeTasks),
+        default=TypeTasks.no_repeat.value,
+        index=True,
+        nullable=False
+        )
+
+    start_data_time = db.Column(
+        db.DateTime,
+        index=True,
+        nullable=False
+        )
+
+    end_data_time = db.Column(
+        db.DateTime,
+        index=True,
+        nullable=True
+        )
 
     created_at = db.Column(
         db.DateTime,
@@ -47,4 +68,4 @@ class Information(db.Model):
         )
 
     def __repr__(self):
-        return f'Information({self.uuid}, {self.user_uuid})'
+        return f'Task({self.uuid}, {self.user_uuid})'

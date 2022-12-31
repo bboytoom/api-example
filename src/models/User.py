@@ -3,7 +3,7 @@ import logging
 
 from datetime import datetime
 from sqlalchemy import and_
-from sqlalchemy.orm import load_only, relationship
+from sqlalchemy.orm import load_only
 from multipledispatch import dispatch
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -34,7 +34,8 @@ class User(db.Model):
     date_of_birth = db.Column(db.Date, index=True, nullable=False)
     image_name = db.Column(db.String(100), nullable=True)
     status = db.Column(db.Boolean, default=True)
-    information = relationship(
+    tasks = db.relationship('Task', backref='tasks')
+    information = db.relationship(
         'Information',
         cascade='all, delete',
         uselist=False,
