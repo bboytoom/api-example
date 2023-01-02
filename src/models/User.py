@@ -8,6 +8,8 @@ from multipledispatch import dispatch
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from src.config.sqlalchemy_db import db
+from src.models.Task import Task
+from src.models.Information import Information
 
 logger = logging.getLogger(__name__)
 
@@ -34,9 +36,9 @@ class User(db.Model):
     date_of_birth = db.Column(db.Date, index=True, nullable=False)
     image_name = db.Column(db.String(100), nullable=True)
     status = db.Column(db.Boolean, default=True)
-    tasks = db.relationship('Task', backref='tasks')
+    tasks = db.relationship(Task, backref='tasks')
     information = db.relationship(
-        'Information',
+        Information,
         cascade='all, delete',
         uselist=False,
         backref='information'

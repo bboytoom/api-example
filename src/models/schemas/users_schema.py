@@ -10,6 +10,10 @@ from marshmallow import Schema, \
     post_load
 
 
+class UserImageSchema(Schema):
+    image = fields.Raw(metadata={'type': 'image'})
+
+
 class UserSchema(Schema):
     uuid = fields.Str()
 
