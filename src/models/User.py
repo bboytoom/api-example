@@ -8,16 +8,25 @@ from multipledispatch import dispatch
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from src.config.sqlalchemy_db import db
+from src.models.Task import Task
+from src.models.Information import Information
 
 logger = logging.getLogger(__name__)
+fields = [
+    'uuid', 'email', 'first_name', 'last_name', 'date_of_birth', 'status', 'image_name'
+    ]
 
 
 class User(db.Model):
     __tablename__ = 'users'
+    __table_args__ = (
+        db.Index('ix_users_uuid_email', 'uuid', 'email', unique=True),
+        )
 
     uuid = db.Column(
         db.CHAR(36),
         primary_key=True,
+        unique=True,
         index=True,
         nullable=False,
         default=uuid.uuid4
@@ -28,7 +37,15 @@ class User(db.Model):
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
     date_of_birth = db.Column(db.Date, index=True, nullable=False)
+    image_name = db.Column(db.String(100), nullable=True)
     status = db.Column(db.Boolean, default=True)
+    tasks = db.relationship(Task, backref='tasks')
+    information = db.relationship(
+        Information,
+        cascade='all, delete',
+        uselist=False,
+        backref='information'
+        )
 
     created_at = db.Column(
         db.DateTime,
@@ -72,14 +89,10 @@ class User(db.Model):
         return check_password_hash(self.password, _password)
 
     def retrieve_user(_uuid):
-        fields = ['uuid', 'email', 'first_name', 'last_name', 'date_of_birth', 'status']
-
         return db.session.query(User).filter_by(uuid=_uuid) \
             .options(load_only(*fields)).first()
 
     def retrieve_all_user():
-        fields = ['uuid', 'email', 'first_name', 'last_name', 'date_of_birth', 'status']
-
         return db.session.query(User) \
             .options(load_only(*fields)).all()
 
