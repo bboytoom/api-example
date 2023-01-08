@@ -18,6 +18,7 @@ def create_app():
     from src.config.application import config
     from src.config.sqlalchemy_db import db
     from src.routes.api import api
+    from src.routes.web import web
 
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(config[os.environ.get('ENV')])
@@ -36,6 +37,7 @@ def create_app():
 
     # Routes
     app.register_blueprint(api)
+    app.register_blueprint(web)
     register_error(app)
 
     return app

@@ -1,5 +1,5 @@
 import functools
-from flask import request, jsonify, abort
+from flask import request, abort
 
 from src.models.User import User
 from src.models.schemas.users_schema import UserSchema, UserImageSchema
@@ -17,9 +17,7 @@ def clean_request_user_store(func):
         errors = schema_user.validate(request.get_json())
 
         if errors:
-            return jsonify(
-                errors=errors
-                ), 422
+            return abort(422, errors)
 
         return func(self, schema_user.load(request.get_json()), *args, **kwargs)
 
@@ -35,11 +33,13 @@ def clean_request_user_image(func):
         if content_type is None or 'multipart/form-data' not in content_type:
             return abort(400, 'Content-Type not supported!')
 
-        errors = schema_user_image.validate(request.files.to_dict(flat=False).get('image', []))
+        image = request.files
+        errors = schema_user_image.validate(image)
 
-        print(errors)
+        if errors:
+            return abort(422, errors)
 
-        return func(self, None, *args, **kwargs)
+        return func(self, image.get('image', None), *args, **kwargs)
 
     return wrapper
 

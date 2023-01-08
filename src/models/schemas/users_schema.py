@@ -1,17 +1,35 @@
 from datetime import datetime
-
-from flask import request
+from flask import request, url_for
 from marshmallow import Schema, \
     fields, \
     validate, \
     validates, \
     ValidationError, \
     pre_load, \
-    post_load
+    post_load, \
+    post_dump
 
 
 class UserImageSchema(Schema):
-    image = fields.Raw(metadata={'type': 'image'})
+    image = fields.Raw(type='file', required=True)
+
+    @validates('image')
+    def valid_image(self, image):
+        if not image:
+            raise ValidationError('Empty file')
+
+        if image.content_type not in {'image/jpeg', 'image/jpg', 'image/png'}:
+            raise ValidationError('File type ' + image.content_type + ' no valid')
+
+        if image.seek(0, 2)/1000 >= 2000:
+            raise ValidationError('The image is very large the max is 2MB')
+
+    @pre_load
+    def pre_load(self, image, **kwargs):
+        file = image.get('image', None)
+        file.filename = file.filename.replace(' ', '_')
+
+        return image
 
 
 class UserSchema(Schema):
@@ -48,6 +66,7 @@ class UserSchema(Schema):
 
     date_of_birth = fields.Date('%Y-%m-%d', required=True)
     status = fields.Bool(required=True)
+    image_name = fields.Str()
 
     @validates('date_of_birth')
     def is_not_in_future(self, value):
@@ -65,10 +84,12 @@ class UserSchema(Schema):
         if request.method in ['PUT']:
             self.fields.get('uuid').required = False
             self.fields.get('password').required = False
+            self.fields.get('image_name').required = False
 
         if request.method in ['POST']:
             self.fields.get('uuid').required = False
             self.fields.get('status').required = False
+            self.fields.get('image_name').required = False
 
         return data
 
@@ -78,6 +99,20 @@ class UserSchema(Schema):
         data['first_name'] = data.get('first_name').lower().rstrip().lstrip()
         data['email'] = data.get('email').lower()
         data['date_of_birth'] = data.get('date_of_birth').strftime('%Y-%m-%d')
+
+        return data
+
+    @post_dump(pass_many=True)
+    def dump_user(self, data, **kwargs):
+        if type(data) is list:
+            for item in data:
+                if item['image_name'] is not None:
+                    item['image_name'] = url_for('static', filename='image/' + item['image_name'])
+                else:
+                    item.pop('image_name')
+
+        if type(data) is dict:
+            data['image_name'] = url_for('static', filename='image/' + data['image_name'])
 
         return data
 

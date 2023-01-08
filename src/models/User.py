@@ -12,6 +12,9 @@ from src.models.Task import Task
 from src.models.Information import Information
 
 logger = logging.getLogger(__name__)
+fields = [
+    'uuid', 'email', 'first_name', 'last_name', 'date_of_birth', 'status', 'image_name'
+    ]
 
 
 class User(db.Model):
@@ -86,14 +89,10 @@ class User(db.Model):
         return check_password_hash(self.password, _password)
 
     def retrieve_user(_uuid):
-        fields = ['uuid', 'email', 'first_name', 'last_name', 'date_of_birth', 'status']
-
         return db.session.query(User).filter_by(uuid=_uuid) \
             .options(load_only(*fields)).first()
 
     def retrieve_all_user():
-        fields = ['uuid', 'email', 'first_name', 'last_name', 'date_of_birth', 'status']
-
         return db.session.query(User) \
             .options(load_only(*fields)).all()
 

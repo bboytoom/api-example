@@ -14,9 +14,8 @@ api.add_url_rule('/users/<uuid:user_uuid>', view_func=user_api, methods=['GET', 
 user_image = UsersImage.as_view('user_image')
 
 # URL's to insert image of the users
-api.add_url_rule('/users/user-image', view_func=user_image, methods=['POST'])
 api.add_url_rule(
     '/users/<uuid:user_uuid>/user-image',
     view_func=user_image,
-    methods=['PUT', 'DELETE']
+    methods=['POST', 'DELETE']
     )
