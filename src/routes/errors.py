@@ -3,7 +3,7 @@ from flask import jsonify, request
 
 def bad_request_handler(e):
     return jsonify(
-        error='Bad Request',
+        error=e.name,
         exception=str(e),
         path=request.path,
         method=request.method
@@ -12,7 +12,7 @@ def bad_request_handler(e):
 
 def page_not_found(e):
     return jsonify(
-        error='Page Not Found',
+        error=e.name,
         exception=str(e),
         path=request.path,
         method=request.method
@@ -21,7 +21,7 @@ def page_not_found(e):
 
 def method_not_allow_handler(e):
     return jsonify(
-        error='Method Not Allow',
+        error=e.name,
         exception=str(e),
         path=request.path,
         method=request.method
@@ -30,8 +30,8 @@ def method_not_allow_handler(e):
 
 def unprocessable_entity(e):
     return jsonify(
-        error='Unprocessable Entity',
-        exception=str(e),
+        error=e.name,
+        exception=e.description,
         path=request.path,
         method=request.method
         ), 422
@@ -39,7 +39,7 @@ def unprocessable_entity(e):
 
 def rate_limit_handler(e):
     return jsonify(
-        error='Rate Limit',
+        error=e.name,
         exception=str(e),
         path=request.path,
         method=request.method
@@ -48,7 +48,7 @@ def rate_limit_handler(e):
 
 def internal_server_error(e):
     return jsonify(
-        error='Server Internal Error',
+        error=e.name,
         exception=str(e),
         path=request.path,
         method=request.method

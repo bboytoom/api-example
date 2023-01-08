@@ -6,8 +6,6 @@ from src.config.logger import CONFIG
 
 class Config():
     SECRET_KEY = os.environ.get('SECRET_KEY')
-    # SERVER_NAME = os.environ.get('HOST')
-
     dictConfig(CONFIG)
 
 
