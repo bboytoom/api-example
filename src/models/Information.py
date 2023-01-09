@@ -48,3 +48,40 @@ class Information(db.Model):
 
     def __repr__(self):
         return f'Information({self.uuid}, {self.user_uuid})'
+
+    def exists_user_uuid(_user_uuid):
+        return db.session.query(Information.uuid) \
+            .filter_by(user_uuid=_user_uuid) \
+            .first() is not None
+
+    @classmethod
+    def new_user_information(cls, _data):
+        return Information(
+            user_uuid=_data.get('user_uuid'),
+            country=_data.get('country'),
+            post_code=_data.get('post_code'),
+            state=_data.get('state'),
+            city=_data.get('city'),
+            address=_data.get('address')
+            )
+
+    def save(self):
+        try:
+            db.session.add(self)
+            db.session.commit()
+
+            return True
+        except Exception as e:
+            logger.error(e)
+
+            return False
+
+    def delete(self):
+        try:
+            db.session.delete(self)
+            db.session.commit()
+            return True
+        except Exception as e:
+            logger.error(e)
+
+            return False

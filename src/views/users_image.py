@@ -3,15 +3,15 @@ from flask import jsonify, abort, send_file
 from flask.views import MethodView
 from werkzeug.utils import secure_filename
 
-from src.views.decorators.user_decorator import validate_method_parameters, \
-    clean_request_user_image
+from src.views.decorators.user_decorator import clean_request_user_image
+from src.views.decorators.parameters_decorator import parameters_user
 
 
 class UsersImage(MethodView):
     def get(self, file_name):
         return send_file('../static/images/' + file_name)
 
-    @validate_method_parameters
+    @parameters_user
     @clean_request_user_image
     def post(self, data, user_uuid):
         filename = secure_filename(data.filename)
@@ -28,7 +28,7 @@ class UsersImage(MethodView):
 
         return abort(400)
 
-    @validate_method_parameters
+    @parameters_user
     def delete(self, user_uuid):
         user_uuid.image_name = None
 
