@@ -9,6 +9,8 @@ from marshmallow import Schema, \
     post_load, \
     post_dump
 
+from src.models.schemas.users_information_schema import schema_user_information
+
 
 class UserImageSchema(Schema):
     image = fields.Raw(type='file', required=True)
@@ -33,6 +35,9 @@ class UserImageSchema(Schema):
 
 
 class UserSchema(Schema):
+    class Meta:
+        ordered = True
+
     uuid = fields.Str()
 
     first_name = fields.Str(
@@ -67,6 +72,7 @@ class UserSchema(Schema):
     date_of_birth = fields.Date('%Y-%m-%d', required=True)
     status = fields.Bool(required=True)
     image_name = fields.Str()
+    information = fields.Nested(schema_user_information)
 
     @validates('date_of_birth')
     def is_not_in_future(self, value):
@@ -110,11 +116,17 @@ class UserSchema(Schema):
                     item['image_name'] = url_for('static', filename='image/' + item['image_name'])
                 else:
                     item.pop('image_name')
+
+                if item['information'] is None:
+                    item.pop('information')
         else:
             if data['image_name'] is not None:
                 data['image_name'] = url_for('static', filename='image/' + data['image_name'])
             else:
                 data.pop('image_name')
+
+            if data['information'] is None:
+                data.pop('information')
 
         return data
 

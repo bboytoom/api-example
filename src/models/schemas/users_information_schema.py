@@ -7,6 +7,9 @@ from marshmallow import Schema, \
 
 
 class UserInformationSchema(Schema):
+    class Meta:
+        ordered = True
+
     user_uuid = fields.Str()
 
     address = fields.Str(
@@ -66,5 +69,4 @@ class UserInformationSchema(Schema):
         return data
 
 
-schema_user_information = UserInformationSchema()
-schemas_users_information = UserInformationSchema(many=True)
+schema_user_information = UserInformationSchema(exclude=('user_uuid',))
