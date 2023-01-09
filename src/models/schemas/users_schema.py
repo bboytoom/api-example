@@ -103,16 +103,18 @@ class UserSchema(Schema):
         return data
 
     @post_dump(pass_many=True)
-    def dump_user(self, data, **kwargs):
+    def post_dump(self, data, **kwargs):
         if type(data) is list:
             for item in data:
                 if item['image_name'] is not None:
                     item['image_name'] = url_for('static', filename='image/' + item['image_name'])
                 else:
                     item.pop('image_name')
-
-        if type(data) is dict:
-            data['image_name'] = url_for('static', filename='image/' + data['image_name'])
+        else:
+            if data['image_name'] is not None:
+                data['image_name'] = url_for('static', filename='image/' + data['image_name'])
+            else:
+                data.pop('image_name')
 
         return data
 

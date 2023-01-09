@@ -1,11 +1,11 @@
 import functools
 from flask import request, abort
 
-from src.models.User import User
 from src.models.schemas.users_schema import UserSchema, UserImageSchema
+from src.models.schemas.users_information_schema import UserInformationSchema
 
 
-def clean_request_user_store(func):
+def clean_request_user(func):
     @functools.wraps(func)
     def wrapper(self, *args, **kwargs):
         content_type = request.headers.get('Content-Type')
@@ -44,17 +44,20 @@ def clean_request_user_image(func):
     return wrapper
 
 
-def validate_method_parameters(func):
+def clean_request_user_information(func):
     @functools.wraps(func)
     def wrapper(self, *args, **kwargs):
-        uuid = kwargs.get('user_uuid', None)
+        content_type = request.headers.get('Content-Type')
+        schema_user_information = UserInformationSchema()
 
-        if uuid is None:
-            return func(self, uuid)
+        if content_type != 'application/json':
+            return abort(400, 'Content-Type not supported!')
 
-        user_uuid = User.query.filter_by(uuid=uuid).first_or_404()
-        return func(self, user_uuid)
+        errors = schema_user_information.validate(request.get_json())
 
-    wrapper.__name__ = func.__name__
+        if errors:
+            return abort(422, errors)
+
+        return func(self, schema_user_information.load(request.get_json()), *args, **kwargs)
 
     return wrapper

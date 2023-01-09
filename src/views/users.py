@@ -3,13 +3,13 @@ from flask.views import MethodView
 
 from src.models.User import User
 from src.models.schemas.users_schema import schema_user, schemas_users
-from src.views.decorators.user_decorator import clean_request_user_store, \
-    validate_method_parameters
+from src.views.decorators.user_decorator import clean_request_user
+from src.views.decorators.parameters_decorator import parameters_user
 
 
 class Users(MethodView):
 
-    @validate_method_parameters
+    @parameters_user
     def get(self, user_uuid):
         if user_uuid is None:
             return jsonify(
@@ -18,7 +18,7 @@ class Users(MethodView):
 
         return jsonify(schema_user.dump(user_uuid))
 
-    @clean_request_user_store
+    @clean_request_user
     def post(self, data):
         if User.exists_email(data.get('email')):
             return abort(422, 'The email already exists')
@@ -33,8 +33,8 @@ class Users(MethodView):
 
         return abort(400)
 
-    @validate_method_parameters
-    @clean_request_user_store
+    @parameters_user
+    @clean_request_user
     def put(self, data, user_uuid):
         if User.exists_email(data.get('email'), user_uuid.uuid):
             return abort(422, 'The email already exists')
@@ -50,7 +50,7 @@ class Users(MethodView):
 
         return abort(400)
 
-    @validate_method_parameters
+    @parameters_user
     def delete(self, user_uuid):
         if user_uuid.delete():
             return '', 204

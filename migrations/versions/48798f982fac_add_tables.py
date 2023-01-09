@@ -1,7 +1,7 @@
 """add tables
 
 Revision ID: 48798f982fac
-Revises: 
+Revises:
 Create Date: 2022-12-31 16:02:54.437473
 
 """
